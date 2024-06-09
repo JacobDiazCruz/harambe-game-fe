@@ -17,6 +17,7 @@ interface PlayfulButtonProps {
 export default function PlayfulButton({
   children,
   size = "medium",
+  endIcon,
   onClick,
 }: PlayfulButtonProps) {
   const router = useRouter();
@@ -33,7 +34,10 @@ export default function PlayfulButton({
         onClick={onClick}
         className={`${buttonSizes[size]} px-6 py-3 bg-[#F38BA3] relative z-[5] font-mono rounded-full text-[#231F20] font-semibold border border-[#231F20] rounded-md`}
       >
-        {children}
+        <div className="flex items-center justify-center">
+          {children}
+          {endIcon && <span className="ml-2 text-[16px]">{endIcon}</span>}
+        </div>
       </button>
       <button
         onClick={onClick}
