@@ -4,8 +4,8 @@ import Image from "next/image";
 export default function GameInfo() {
   return (
     <div className="dark:bg-[#0f1214] bg-white border-b border-b-neutral-300 dark:border-b-neutral-800 py-4 w-full">
-      <div className="flex items-center max-w-[1400px] justify-center gap-2">
-        <div className="m-auto flex items-center gap-2">
+      <div className="flex items-center justify-center gap-[500px]">
+        <div className="flex items-center gap-2">
           <div className="rounded-full bg-green-200 w-7 h-7 overflow-hidden">
             <Image src={CatImage} alt="Meme cat" width={100} height={100} />
           </div>
