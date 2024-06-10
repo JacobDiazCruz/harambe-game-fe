@@ -10,7 +10,6 @@ import { FaArrowRight } from "react-icons/fa6";
 import Navbar from "@/components/features/Navbar";
 import PlayfulButton from "@/components/ui/PlayfulButton";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type GameStatusState =
@@ -19,9 +18,15 @@ type GameStatusState =
   | "GAME_ONGOING"
   | "DONE";
 
-export default function Play() {
-  const router = useRouter();
+interface Character {
+  id: string;
+  image: any;
+  name: string;
+  isSelected: boolean;
+  width: number;
+}
 
+export default function Play() {
   /**
    * Available statuses:
    * WAITING_FOR_OTHERS | SELECTING | GAME_ONGOING | DONE
@@ -29,7 +34,7 @@ export default function Play() {
   const [gameStatus, setGameStatus] =
     useState<GameStatusState>("WAITING_FOR_OTHERS");
 
-  const [options, setOptions] = useState([
+  const [characters, setCharacters] = useState<Character[]>([
     {
       id: "5112412",
       image: HarambeImage,
@@ -52,17 +57,43 @@ export default function Play() {
       width: 90,
     },
   ]);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
+    null
+  );
 
   const handleOptionClick = (id: string) => {
-    setOptions((prevOptions) =>
-      prevOptions.map((option) => {
+    setCharacters((prev) =>
+      prev.map((option) => {
         return { ...option, isSelected: option.id === id };
       })
     );
   };
 
-  const handleSelectedCharacter = () => {
+  const handleSelectedCharacter = (data: any) => {
+    setSelectedCharacter(data);
     setGameStatus("GAME_ONGOING");
+  };
+
+  const handleClickNextRound = () => {
+    setCharacters((prev) =>
+      prev.map((character) => {
+        return { ...character, isSelected: false };
+      })
+    );
+    setGameStatus("SELECTING");
+  };
+
+  const calculateCharWidth = (character: Character) => {
+    switch (character.name) {
+      case "Harambe":
+        return 300;
+      case "Pepe":
+        return 190;
+      case "Hector":
+        return 100;
+      default:
+        return 0;
+    }
   };
 
   return (
@@ -80,14 +111,18 @@ export default function Play() {
               Hector kills Harambe
             </p>
             <PlayfulButton
-              onClick={() => setGameStatus("SELECTING")}
+              onClick={handleClickNextRound}
               endIcon={<FaArrowRight />}
             >
               Next round
             </PlayfulButton>
           </div>
           <div className="flex items-center mt-6 gap-[10rem]">
-            <Image src={HarambeImage} alt="Harambe" width={300} />
+            <Image
+              src={selectedCharacter?.image}
+              alt="Harambe"
+              width={calculateCharWidth(selectedCharacter as Character)}
+            />
             <Image src={FlyImage} alt="Harambe" width={100} />
           </div>
         </div>
@@ -97,30 +132,32 @@ export default function Play() {
             Choose:
           </h4>
           <div className="flex items-center gap-3 mt-7">
-            {options.map((option) => (
+            {characters.map((character) => (
               <div className="flex flex-col">
                 <div
-                  key={option.id}
-                  onClick={() => handleOptionClick(option.id)}
+                  key={character.id}
+                  onClick={() => handleOptionClick(character.id)}
                   className="border rounded-md border-neutral-100 cursor-pointer w-[250px] h-[250px] flex items-center flex-col border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30"
                 >
-                  {option.isSelected && (
+                  {character.isSelected && (
                     <div className="absolute bg-black/80 h-full -mt-4 text-center px-2 flex flex-col items-center justify-center">
                       <p className="text-neutral-200 mb-2 font-medium font-mono">
-                        Are you sure to select {option.name}?
+                        Are you sure to select {character.name}?
                       </p>
-                      <PlayfulButton onClick={handleSelectedCharacter}>
+                      <PlayfulButton
+                        onClick={() => handleSelectedCharacter(character)}
+                      >
                         Fuck yeah!
                       </PlayfulButton>
                     </div>
                   )}
                   <p className="font-mono dark:text-neutral-200">
-                    {option.name}
+                    {character.name}
                   </p>
                   <Image
-                    src={option.image}
-                    alt={option.name}
-                    width={option.width}
+                    src={character.image}
+                    alt={character.name}
+                    width={character.width}
                     className="m-auto"
                   />
                 </div>
